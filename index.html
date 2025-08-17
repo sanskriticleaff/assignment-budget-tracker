@@ -6,6 +6,7 @@
     <title>Budget Tracker</title>
     <link rel="icon"  href="/android-chrome-192x192.png">
      <script src="https://cdn.tailwindcss.com"></script>
+     
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
    <div class="bg-white shadow-lg rounded-2xl p-6 w-full max-w-md">
@@ -41,10 +42,72 @@
     </div>
   </div>
  
+ 
+ <script>
+let balance = 0;
+    let totalCredits = 0;
+    let totalDebits = 0;
+    let type = "credit"; // default
+
+    const balanceEl = document.getElementById("balance");
+    const finalBalanceEl = document.getElementById("finalBalance");
+    const totalCreditsEl = document.getElementById("totalCredits");
+    const totalDebitsEl = document.getElementById("totalDebits");
+    const errorEl = document.getElementById("error");
+    const transactionsEl = document.getElementById("transactions");
+
+    document.getElementById("creditBtn").onclick = () => type = "credit";
+    document.getElementById("debitBtn").onclick = () => type = "debit";
+
+    document.getElementById("addBtn").onclick = () => {
+      const amount = parseFloat(document.getElementById("amount").value);
+      const desc = document.getElementById("description").value.trim();
+
+      errorEl.classList.add("hidden");
+      if (isNaN(amount) || amount <= 0) {
+        errorEl.textContent = "Amount must be greater than 0";
+        errorEl.classList.remove("hidden");
+        return;
+      }
+      if (!desc) {
+        errorEl.textContent = "Description cannot be empty";
+        errorEl.classList.remove("hidden");
+        return;
+      }
+
+      if (type === "debit" && balance - amount < 0) {
+        errorEl.textContent = "Insufficient balance for this debit";
+        errorEl.classList.remove("hidden");
+        return;
+      }
+
+      const li = document.createElement("li");
+      li.className = "flex justify-between border-b pb-1";
+      const timestamp = new Date().toLocaleString();
+
+      if (type === "credit") {
+        balance += amount;
+        totalCredits += amount;
+        li.innerHTML = `<span>${desc} (${timestamp})</span><span class="text-green-600 font-semibold">+ ₹${amount}</span>`;
+      } else {
+        balance -= amount;
+        totalDebits += amount;
+        li.innerHTML = `<span>${desc} (${timestamp})</span><span class="text-red-600 font-semibold">– ₹${amount}</span>`;
+      }
+
+      transactionsEl.prepend(li);
+      balanceEl.textContent = `₹${balance}`;
+      finalBalanceEl.textContent = `₹${balance}`;
+      totalCreditsEl.textContent = `₹${totalCredits}`;
+      totalDebitsEl.textContent = `₹${totalDebits}`;
+
+      // Clear form
+      document.getElementById("amount").value = "";
+      document.getElementById("description").value = "";
+    };
 
 
-
-
+</script>
 
 </body>
 </html>
